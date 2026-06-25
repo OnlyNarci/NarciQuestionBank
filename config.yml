@@ -1,0 +1,19 @@
+# 应用配置文件
+
+# 界面配置
+interface:
+  theme: "light"
+  window:
+    height: 800
+    center_width: 1200
+    left_width: 400
+    right_width: 400
+
+# 路径配置
+paths:
+  data_dir: "data"
+  db_path: "data/db/agent_format.db"
+  temp_dir: "temp"
+  log_dir: "logs"
+  static_dir: "static"
+  prompt_dir: "static/prompt"
