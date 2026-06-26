@@ -4,12 +4,12 @@
 from typing import List, Optional, Callable
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QComboBox, QPushButton, QStyledItemDelegate, QStyleOptionViewItem, QDialog
+    QComboBox, QPushButton, QStyledItemDelegate, QStyleOptionViewItem, QDialog, QStyle, QSizePolicy
 )
 from PySide6.QtCore import Qt, QSize, QRect, QModelIndex, QAbstractItemModel
 from PySide6.QtGui import QIcon, QPainter, QPixmap, QColor, QPainterPath, QPen, QBrush, QMouseEvent
 
-from views.base.window import BaseWindow
+from views.base.panel import BasePanel
 from views.base.styles import COLORS
 from views.component.llm_config_dialog import LLMConfigDialog
 from views.component.silent_message_box import silent_information, silent_warning, silent_question
@@ -266,7 +266,6 @@ class LlmCombo(QComboBox):
                 background-color: #FFFFFF;
                 color: #000000;
                 min-height: 32px;
-                height: 32px;
             }}
             QLineEdit:focus {{
                 border-color: {COLORS['primary_dark']};
@@ -279,7 +278,6 @@ class LlmCombo(QComboBox):
                 border: none;
                 padding: 0;
                 min-height: 32px;
-                height: 32px;
             }}
             QComboBox::drop-down {{
                 subcontrol-origin: padding;
@@ -400,16 +398,18 @@ class LlmCombo(QComboBox):
         return None
 
 
-class LeftPanel(BaseWindow):
+class LeftPanel(BasePanel):
     """
     左侧面板，提供LLM连接配置管理功能
     """
-    
-    def __init__(self) -> None:
+
+    def __init__(self, parent=None) -> None:
         """
         初始化左侧面板
+
+        :param parent: 父组件
         """
-        super().__init__(title="导航", width=300, height=800, min_width=250, min_height=600)
+        super().__init__(parent)
         
         # 当前选中的LLM配置ID
         self.current_llm_id: Optional[int] = None
@@ -480,7 +480,9 @@ class LeftPanel(BaseWindow):
         
         # 添加按钮
         self.add_button = QPushButton("+")
-        self.add_button.setFixedSize(32, 32)
+        self.add_button.setMinimumSize(32, 32)
+        self.add_button.setMaximumWidth(48)
+        self.add_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
         self.add_button.setStyleSheet(f"""
             QPushButton {{
                 font-size: 18px;
@@ -489,6 +491,7 @@ class LeftPanel(BaseWindow):
                 border-radius: 4px;
                 background-color: {COLORS['primary']};
                 color: {COLORS['text']};
+                padding: 0;
             }}
             QPushButton:hover {{
                 background-color: {COLORS['primary_light']};

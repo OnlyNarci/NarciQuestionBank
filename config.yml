@@ -1,19 +1,13 @@
-# 应用配置文件
-
-# 界面配置
 interface:
-  theme: "light"
+  theme: light
   window:
-    height: 800
-    center_width: 1200
-    left_width: 400
-    right_width: 400
-
-# 路径配置
+    center_width: 362
+    height: 600
+    left_width: 261
+    right_width: 275
 paths:
-  data_dir: "data"
-  db_path: "data/db/agent_format.db"
-  temp_dir: "temp"
-  log_dir: "logs"
-  static_dir: "static"
-  prompt_dir: "static/prompt"
+  data_dir: data
+  db_path: data\db\paper_format.db
+  log_dir: logs
+  prompt_dir: static\prompt
+  temp_dir: temp

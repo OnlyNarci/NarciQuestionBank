@@ -112,6 +112,15 @@ def _settings_to_dict(settings: AppSetting) -> Dict[str, Any]:
     :param settings: AppSetting对象
     :return: 配置信息字典
     """
+    root = get_root_dir()
+    
+    def relative_path(path: Path) -> str:
+        """将绝对路径转换为相对路径"""
+        try:
+            return str(path.relative_to(root))
+        except ValueError:
+            return str(path)
+    
     return {
         'interface': {
             'theme': settings.interface.theme,
@@ -123,11 +132,11 @@ def _settings_to_dict(settings: AppSetting) -> Dict[str, Any]:
             },
         },
         'paths': {
-            'data_dir': settings.paths.data_dir,
-            'db_path': settings.paths.db_path,
-            'temp_dir': settings.paths.temp_dir,
-            'log_dir': settings.paths.log_dir,
-            'prompt_dir': settings.paths.prompt_dir
+            'data_dir': relative_path(settings.paths.data_dir),
+            'db_path': relative_path(settings.paths.db_path),
+            'temp_dir': relative_path(settings.paths.temp_dir),
+            'log_dir': relative_path(settings.paths.log_dir),
+            'prompt_dir': relative_path(settings.paths.prompt_dir)
         }
     }
 
@@ -162,10 +171,12 @@ def update_window_settings(window_setting: WindowSettings) -> None:
     :param window_setting: 窗口设置
     """
     global _settings
-    _settings.interface.window = window_setting
+    settings = get_settings()
+    settings.interface.window = window_setting
+    _settings = settings
     
     # 保存到YAML文件
-    config_dict = _settings_to_dict(_settings)
+    config_dict = _settings_to_dict(settings)
     save_config_to_yaml(config_dict)
 
 

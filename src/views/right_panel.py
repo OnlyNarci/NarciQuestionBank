@@ -3,20 +3,22 @@
 """
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
-from views.base.window import BaseWindow
+from views.base.panel import BasePanel
 from views.base.styles import COLORS
 
 
-class RightPanel(BaseWindow):
+class RightPanel(BasePanel):
     """
     右侧面板
     """
-    
-    def __init__(self):
+
+    def __init__(self, parent=None):
         """
         初始化右侧面板
+
+        :param parent: 父组件
         """
-        super().__init__(title="修改建议", width=300, height=800, min_width=250, min_height=600)
+        super().__init__(parent)
         
         # 创建白色圆角盒子
         self._create_white_box()

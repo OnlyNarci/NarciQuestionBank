@@ -2,7 +2,8 @@
 主程序入口
 """
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QSplitter
 
 from db.session import DbSession
 from utils.log_manager import get_logger
@@ -48,28 +49,43 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # 创建中央内容区域
-        content_widget = QWidget()
-        content_widget.setStyleSheet(f"background-color: {COLORS['app_background']};")
-        content_layout = QHBoxLayout(content_widget)
-        content_layout.setContentsMargins(0, 0, 0, 0)
-        content_layout.setSpacing(0)
+        # 使用QSplitter创建可调整的三联布局
+        self.splitter = QSplitter()
+        self.splitter.setOrientation(Qt.Horizontal)
+        self.splitter.setStyleSheet(f"""
+            QSplitter::handle {{
+                background-color: {COLORS['border']};
+                width: 4px;
+            }}
+            QSplitter::handle:hover {{
+                background-color: {COLORS['primary']};
+            }}
+        """)
 
         # 创建左侧面板
         self.left_panel = LeftPanel()
-        self.left_panel.setFixedWidth(window_settings.left_width)
-        content_layout.addWidget(self.left_panel)
+        self.left_panel.setMinimumWidth(200)
+        self.left_panel.setMaximumWidth(600)
+        self.splitter.addWidget(self.left_panel)
 
         # 创建中央面板
         self.center_panel = CenterPanel()
-        content_layout.addWidget(self.center_panel, 1)  # 占据剩余空间
+        self.splitter.addWidget(self.center_panel)
 
         # 创建右侧面板
         self.right_panel = RightPanel()
-        self.right_panel.setFixedWidth(window_settings.right_width)
-        content_layout.addWidget(self.right_panel)
+        self.right_panel.setMinimumWidth(200)
+        self.right_panel.setMaximumWidth(600)
+        self.splitter.addWidget(self.right_panel)
 
-        main_layout.addWidget(content_widget, 1)  # 占据剩余空间
+        # 设置初始面板宽度比例
+        self.splitter.setSizes([
+            window_settings.left_width,
+            window_settings.center_width,
+            window_settings.right_width
+        ])
+
+        main_layout.addWidget(self.splitter, 1)
 
         # 设置主窗口中央部件
         self.setCentralWidget(main_widget)
@@ -82,10 +98,16 @@ class MainWindow(QMainWindow):
         width = self.width()
         height = self.height()
 
-        # 计算中央面板宽度（总宽度减去左右面板）
-        left_width = self.left_panel.width()
-        right_width = self.right_panel.width()
-        center_width = width - left_width - right_width
+        # 从splitter获取面板宽度
+        sizes = self.splitter.sizes()
+        if len(sizes) == 3:
+            left_width = sizes[0]
+            center_width = sizes[1]
+            right_width = sizes[2]
+        else:
+            left_width = self.left_panel.width()
+            right_width = self.right_panel.width()
+            center_width = width - left_width - right_width
 
         # 创建窗口设置对象
         window_settings = WindowSettings(
